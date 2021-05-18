@@ -25,11 +25,6 @@
         name: ser2net
         state: present
 
-    - name: install nano
-      opkg:
-        name: nano
-        state: present
-
     - name: copy rfxtrx433.conf
       copy:
         src: rfxtrx433.conf
