@@ -1,0 +1,41 @@
+---
+ 
+- hosts: all
+  roles:
+    - gekmihesg.openwrt
+  tasks:
+
+    - name: install usbutils
+      opkg:
+        name: usbutils 
+        state: present
+
+    - name: install kmod-usb-serial
+      opkg:
+        name: kmod-usb-serial
+        state: present
+      
+    - name: install kmod-usb-serial-ftdi
+      opkg:
+        name: kmod-usb-serial-ftdi
+        state: present
+
+    - name: install ser2net
+      opkg:
+        name: ser2net
+        state: present
+
+    - name: copy rfxtrx433.conf
+      copy:
+        src: rfxtrx433.conf
+        dest: /etc/rfxtrx433.conf
+
+    - name: copy usb hotplug script
+      copy:
+        src: 99-rfxtrx433
+        dest: /etc/hotplug.d/usb/99-rfxtrx433
+
+    - name: copy rc.local
+      copy:
+        src: rc.local
+        dest: /etc/rc.local
