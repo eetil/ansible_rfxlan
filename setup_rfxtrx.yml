@@ -1,9 +1,45 @@
 ---
  
 - hosts: all
+
+  vars_prompt:
+
+    - name: ssid
+      prompt: Enter wireless SSID
+      private: no
+
+    - name: wifi_key
+      prompt: Enter wireless password
+      private: no
+
+    - name: root_password
+      prompt: "Enter new root password"
+      private: no
+
   roles:
     - gekmihesg.openwrt
   tasks:
+
+    - name: generate shell script for wifi setup
+      template:
+        src: "wifi-setup.j2"
+        dest: /tmp/wifi-setup.sh
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: run wifi setup shell script
+      ansible.builtin.shell: 
+        cmd: sh /tmp/wifi-setup.sh
+
+    - name: delete wifi setup script
+      file:
+        state: absent
+        path: /tmp/wifi-setup.sh
+
+    - name: commit changes
+      uci:
+        command: commit
 
     - name: install usbutils
       opkg:
@@ -30,13 +66,22 @@
         src: rfxtrx433.conf
         dest: /etc/rfxtrx433.conf
 
+    - name: create /etc/hotplug.d/usb directory
+      ansible.builtin.shell: 
+        cmd: mkdir /etc/hotplug.d/usb
+
     - name: copy usb hotplug script
       copy:
         src: 99-rfxtrx433
         dest: /etc/hotplug.d/usb/99-rfxtrx433
+        recurse: yes
 
     - name: copy rc.local
       copy:
         src: rc.local
         dest: /etc/rc.local
 
+    - name: set new root password
+      ansible.builtin.shell: 
+        cmd: echo -e "{{ root_password }}\n{{ root_password }}" | passwd root
+    
