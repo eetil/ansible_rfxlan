@@ -65,6 +65,9 @@
       copy:
         src: rfxtrx433.conf
         dest: /etc/rfxtrx433.conf
+        owner: root
+        group: root
+        mode: 0644
 
     - name: create /etc/hotplug.d/usb directory
       ansible.builtin.shell: 
@@ -74,12 +77,17 @@
       copy:
         src: 99-rfxtrx433
         dest: /etc/hotplug.d/usb/99-rfxtrx433
-        recurse: yes
+        owner: root
+        group: root
+        mode: 0754
 
     - name: copy rc.local
       copy:
         src: rc.local
         dest: /etc/rc.local
+        owner: root
+        group: root
+        mode: 0754
 
     - name: set new root password
       ansible.builtin.shell: 
